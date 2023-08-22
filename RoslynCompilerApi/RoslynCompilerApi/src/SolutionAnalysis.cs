@@ -85,12 +85,38 @@ public class SolutionAnalysis
     
     public IEnumerable<ClassDeclarationSyntax> GetSyntaxClassDeclaration(SyntaxNode syntaxRoot)
     {
-        return syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>();
+        return GetSyntaxDeclaration<ClassDeclarationSyntax>(syntaxRoot);
     }
     
     public IEnumerable<NamespaceDeclarationSyntax> GetSyntaxNamespaceDeclaration(SyntaxNode syntaxRoot)
     {
-        return syntaxRoot.DescendantNodes().OfType<NamespaceDeclarationSyntax>();
+        return GetSyntaxDeclaration<NamespaceDeclarationSyntax>(syntaxRoot);
+    }
+    
+    public IEnumerable<InterfaceDeclarationSyntax> GetSyntaxInterfaceDeclaration(SyntaxNode syntaxRoot)
+    {
+        return GetSyntaxDeclaration<InterfaceDeclarationSyntax>(syntaxRoot);
+    }
+
+    public IEnumerable<T> GetSyntaxDeclaration<T>(SyntaxNode syntaxRoot) where T : SyntaxNode
+    {
+        return syntaxRoot.DescendantNodes().OfType<T>();
+    }
+
+    public T? GetSymbolFromSyntax<T>(SemanticModel semanticModel, SyntaxNode declaration) where T : class, ISymbol
+    {
+        ISymbol? symbol = semanticModel.GetDeclaredSymbol(declaration);
+        if (symbol == null)
+            return null;
+        
+        return symbol as T;
+    }
+    
+    public IEnumerable<IFieldSymbol> GetAllFieldMember(INamedTypeSymbol symbol)
+    {
+        return symbol.GetMembers()
+            .Where(m => m.Kind == SymbolKind.Field)
+            .Cast<IFieldSymbol>();
     }
 
     public IEnumerable<IMethodSymbol> GetAllMethodMember(INamedTypeSymbol symbol)
