@@ -5,9 +5,9 @@ namespace RoslynCompilerApi;
 
 public class DllAnalysis
 {
-    public void Run()
+    public static void Run()
     {
-        string dllPath = "./input.dll";
+        string dllPath = "../../../input/input.dll";
         
         var reference = MetadataReference.CreateFromFile(dllPath);
         
